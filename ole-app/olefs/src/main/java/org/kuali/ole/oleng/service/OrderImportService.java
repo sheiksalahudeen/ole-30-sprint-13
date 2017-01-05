@@ -6,6 +6,8 @@ import org.kuali.ole.oleng.batch.profile.model.BatchProcessProfile;
 import org.kuali.ole.pojo.OleOrderRecord;
 import org.kuali.ole.pojo.OleTxRecord;
 
+import java.util.List;
+
 /**
  * Created by SheikS on 1/6/2016.
  */
@@ -14,4 +16,6 @@ public interface OrderImportService {
     public OleOrderRecord prepareOleOrderRecord(RecordDetails recordDetails, BatchProcessProfile batchProcessProfile, Exchange exchange);
     public OleTxRecord processDataMapping(RecordDetails recordDetails, BatchProcessProfile batchProcessProfile, Exchange exchange);
     public void setOleNGMemorizeService(OleNGMemorizeService oleNGMemorizeService);
+    public List<String> getTypes();
+
 }

@@ -29,6 +29,8 @@ public class OleNGPOHelperUtil extends BusinessObjectServiceHelperUtil {
     private BatchUtil batchUtil;
     private OleNGPOValidationUtil oleNGPOValidationUtil;
 
+    private String source;
+
     public Map<Integer, Set<Integer>> processReqAndPo(List<RecordDetails> recordDetailsList, BatchProcessProfile batchProcessProfile,
                                                       CreateReqAndPOBaseServiceHandler createReqAndPOServiceHandler,
                                                       Exchange exchange)  {
@@ -149,5 +151,13 @@ public class OleNGPOHelperUtil extends BusinessObjectServiceHelperUtil {
 
     public void setOleNGPOValidationUtil(OleNGPOValidationUtil oleNGPOValidationUtil) {
         this.oleNGPOValidationUtil = oleNGPOValidationUtil;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

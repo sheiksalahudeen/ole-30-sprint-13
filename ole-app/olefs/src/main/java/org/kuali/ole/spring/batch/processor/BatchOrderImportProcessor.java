@@ -1,6 +1,7 @@
 package org.kuali.ole.spring.batch.processor;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -27,6 +28,7 @@ import org.kuali.ole.oleng.resolvers.CreateRequisitionOnlyHander;
 import org.kuali.ole.oleng.resolvers.OrderProcessHandler;
 import org.kuali.ole.oleng.service.OleNGMemorizeService;
 import org.kuali.ole.oleng.service.OleNGRequisitionService;
+import org.kuali.ole.oleng.service.OrderImportService;
 import org.kuali.ole.oleng.util.OleNGPOHelperUtil;
 import org.kuali.ole.utility.BibUtil;
 import org.kuali.rice.core.api.config.property.ConfigContext;
@@ -34,6 +36,7 @@ import org.marc4j.marc.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -209,6 +212,8 @@ public class BatchOrderImportProcessor extends BatchFileProcessor {
         oleNgBatchResponse.setResponse(response);
         oleNgBatchResponse.setNoOfFailureRecord(getFailureRecordsCount(orderFailureResponseList));
 
+        printLogForBugFix(batchProcessProfile.getBatchProcessProfileName());
+
         return oleNgBatchResponse;
     }
 
@@ -372,11 +377,45 @@ public class BatchOrderImportProcessor extends BatchFileProcessor {
     public OleNGPOHelperUtil getOleNGPOHelperUtil() {
         if(null == oleNGPOHelperUtil) {
             oleNGPOHelperUtil = new OleNGPOHelperUtil();
+            oleNGPOHelperUtil.setSource("Normal Order import");
         }
         return oleNGPOHelperUtil;
     }
 
     public void setOleNGPOHelperUtil(OleNGPOHelperUtil oleNGPOHelperUtil) {
         this.oleNGPOHelperUtil = oleNGPOHelperUtil;
+    }
+
+    private void printLogForBugFix(String batchProcessProfileName) {
+        StringBuffer stringBuffer = new StringBuffer();
+        OleNGPOHelperUtil oleNGPOHelperUtil = getOleNGPOHelperUtil();
+        OrderImportService oleOrderImportService = oleNGPOHelperUtil.getOleOrderImportService();
+        stringBuffer.append(getClassInfoForPrint(this))
+                    .append(" --> Profile Name : " + batchProcessProfileName)
+                    .append(" --> " + getClassInfoForPrint(oleNGPOHelperUtil))
+                    .append(" --> " + oleNGPOHelperUtil.getSource())
+                    .append(" --> " + getClassInfoForPrint(oleOrderImportService))
+                    .append(" --> Types : ");
+        List<String> types = oleOrderImportService.getTypes();
+        for (Iterator<String> iterator = types.iterator(); iterator.hasNext(); ) {
+            String type = iterator.next();
+            stringBuffer.append(type + " ");
+        }
+        stringBuffer.append("\n\n");
+        String bugFixLogDirectory = ConfigContext.getCurrentContextConfig().getProperty("bugfix.log.directory");
+        File file = new File(bugFixLogDirectory);
+        if(!file.exists()) {
+            file.mkdirs();
+        }
+        try {
+            FileUtils.write(new File(file,"print.log"),stringBuffer.toString(), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public String getClassInfoForPrint(Object object) {
+        return object.getClass().getSimpleName() + "@" + Integer.toHexString(object.hashCode());
     }
 }

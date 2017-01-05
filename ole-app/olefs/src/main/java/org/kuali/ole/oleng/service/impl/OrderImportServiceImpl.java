@@ -355,4 +355,9 @@ public class OrderImportServiceImpl implements OrderImportService {
     public void setOleNGMemorizeService(OleNGMemorizeService oleNGMemorizeService) {
         this.oleNGMemorizeService = oleNGMemorizeService;
     }
+
+    @Override
+    public List<String> getTypes() {
+        return getDataMappingTypesToProcess();
+    }
 }
